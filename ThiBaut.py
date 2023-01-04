@@ -3,6 +3,7 @@ from telebot import types
 import time
 import csv
 
+# from ThiBaut import ThiFunc
 
 # connect to the telegram bot
 t_file = open(r'C:\Users\48885\Documents\Python Knowledge\MoodKeepBot.txt')
@@ -10,7 +11,7 @@ token_id = t_file.read()
 t_file.close()
 
 # list connection types
-all_con_types = ['text','audio','document','photo','sticker','video','video_note','voice','location','contact','new_chat_members','left_chat_member','new_chat_title','new_chat_photo','delete_chat_photo','group_chat_created','supergroup_chat_created','channel_chat_created','migrate_to_chat_id','migrate_from_chat_id','pinned_message']
+all_con_types = ('text','audio','document','photo','sticker','video','video_note','voice','location','contact','new_chat_members','left_chat_member','new_chat_title','new_chat_photo','delete_chat_photo','group_chat_created','supergroup_chat_created','channel_chat_created','migrate_to_chat_id','migrate_from_chat_id','pinned_message')
 
 dict_channel_block = {}
 
@@ -23,7 +24,6 @@ button_no = types.InlineKeyboardButton('Нет', callback_data='no')
 yn_keyboard = types.InlineKeyboardMarkup()
 yn_keyboard.add(button_yes)
 yn_keyboard.add(button_no)
-
 
 # is channel locked
 def is_channed_blocked(channel_id: int):
