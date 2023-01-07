@@ -27,15 +27,16 @@ yn_keyboard.add(button_no)
 
 # is channel locked
 def is_channed_blocked(channel_id: int):
-    if channel_id in dict_channel_block:
-        if len(dict_channel_block[channel_id]) > 1:
-            return True
-        else:
-            return False
+    if dict_channel_block and channel_id:
+        if channel_id in dict_channel_block:
+            if len(dict_channel_block[channel_id]) > 1:
+                return True
+            else:
+                return False
 
 # has user voted
 def has_voted(channel_id: int, username: str):
-    if dict_channel_block:
+    if dict_channel_block and channel_id:
         if channel_id in dict_channel_block and len(dict_channel_block) > 0:
             if dict_channel_block[channel_id]:
                 if username in dict_channel_block[channel_id]:
@@ -102,33 +103,39 @@ def handle_message(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data == "yes":
-        print(call.from_user.username + ' hit YES at ' + str(time.time()) + ' ' + str(not has_voted(call.message.reply_to_message.forward_from_chat.id, call.from_user.username)))
-        if is_channed_blocked(call.message.reply_to_message.forward_from_chat.id):
-            bot.answer_callback_query(call.id, "Канал уже в стоп-листе")
-            bot.delete_message(call.message.chat.id, message_id=call.message.id)
-            # bot.send_message(call.message.chat.id, 'Канал уже в стоп-листе')
-        else:
-            if not has_voted(call.message.reply_to_message.forward_from_chat.id, call.from_user.username):
-                bot.answer_callback_query(call.id, "Голос принят!")
-                dict_add(call.message.reply_to_message.forward_from_chat.id, call.from_user.username)
-                block_list_update_ext(dict_channel_block)
-                if is_channed_blocked(call.message.reply_to_message.forward_from_chat.id):
-                    bot.delete_message(call.message.chat.id, message_id=call.message.id)
-                    bot.send_message(call.message.chat.id, call.message.reply_to_message.forward_from_chat.title + ', давай до свидания!')
-                else:
-                    bot.send_message(call.message.chat.id, 'Нужны еще голоса')
+        if not call.message.reply_to_message == None:
+            print(call.from_user.username + ' hit YES at ' + str(time.time()) + ' ' + str(not has_voted(call.message.reply_to_message.forward_from_chat.id, call.from_user.username)))
+            if is_channed_blocked(call.message.reply_to_message.forward_from_chat.id):
+                bot.answer_callback_query(call.id, "Канал уже в стоп-листе")
+                bot.delete_message(call.message.chat.id, message_id=call.message.id)
+                # bot.send_message(call.message.chat.id, 'Канал уже в стоп-листе')
             else:
-                bot.answer_callback_query(call.id, "Нельзя просто так взять и проголосовать два раза")
-
-    elif call.data == "no":
-        print(call.from_user.username + ' hit NO at ' + str(time.time()) + ' ' + str(not has_voted(call.message.reply_to_message.forward_from_chat.id, call.from_user.username)))
-        if not is_channed_blocked(call.message.reply_to_message.forward_from_chat.id):
-            bot.answer_callback_query(call.id, "Товарищи сообщали ранее, что канал политический")
+                if not has_voted(call.message.reply_to_message.forward_from_chat.id, call.from_user.username):
+                    bot.answer_callback_query(call.id, "Голос принят!")
+                    dict_add(call.message.reply_to_message.forward_from_chat.id, call.from_user.username)
+                    block_list_update_ext(dict_channel_block)
+                    if is_channed_blocked(call.message.reply_to_message.forward_from_chat.id):
+                        bot.delete_message(call.message.chat.id, message_id=call.message.id)
+                        bot.send_message(call.message.chat.id, call.message.reply_to_message.forward_from_chat.title + ', давай до свидания!')
+                    else:
+                        bot.send_message(call.message.chat.id, 'Нужны еще голоса')
+                else:
+                    bot.answer_callback_query(call.id, "Нельзя просто так взять и проголосовать два раза")
         else:
             bot.delete_message(call.message.chat.id, message_id=call.message.id)
-            bot.answer_callback_query(call.id, "Это замечательно")
-        # bot.send_message(call.message.chat.id, 'Как же нет? Обманываешь бота? Ну ладно')
-        
+            bot.answer_callback_query(call.id, "Ну почему так поздно? Политота ускользнула от нас в этот раз")
+    elif call.data == "no":
+        if not call.message.reply_to_message == None:
+            print(call.from_user.username + ' hit NO at ' + str(time.time()) + ' ' + str(not has_voted(call.message.reply_to_message.forward_from_chat.id, call.from_user.username)))
+            if is_channed_blocked(call.message.reply_to_message.forward_from_chat.id):
+                bot.answer_callback_query(call.id, "Товарищи сообщали ранее, что канал политический")
+            else:
+                bot.delete_message(call.message.chat.id, message_id=call.message.id)
+                bot.answer_callback_query(call.id, "Это замечательно")
+            # bot.send_message(call.message.chat.id, 'Как же нет? Обманываешь бота? Ну ладно')
+        else:
+            bot.delete_message(call.message.chat.id, message_id=call.message.id)
+            bot.answer_callback_query(call.id, "Ну почему так поздно? Политота ускользнула от нас в этот раз")
 # def mut(message):
 #     bot.restrict_chat_member(message.chat.id, message.from_user.id, until_date=int(time())+86400)
         # bot.restrict_chat_member(call.message.chat.id, call.message.from_user.id, call.chatMember(can_send_other_messages = False), until_date)

@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 import time
 import csv
-
+# from ThiBaut import ThiFunc
 
 # connect to the telegram bot
 t_file = open(r'C:\Users\48885\Documents\Python Knowledge\MoodKeepBot.txt')
@@ -79,6 +79,7 @@ def block_list_update_ext(dict_channel_block):
         for k, v in dict_channel_block.items():
             writer.writerow({'id': k, 'vote': v})
     block_file.close()
+
 
 # Add start command /start
 @bot.message_handler(commands=["start"])
